@@ -152,6 +152,9 @@ export interface Database {
           actual_amount: number
           notes: string | null
           is_recurring: boolean
+          is_completed: boolean
+          completed_by: string | null
+          completed_at: string | null
           sort_order: number
           created_by: string | null
           updated_by: string | null
@@ -167,6 +170,9 @@ export interface Database {
           actual_amount?: number
           notes?: string | null
           is_recurring?: boolean
+          is_completed?: boolean
+          completed_by?: string | null
+          completed_at?: string | null
           sort_order?: number
           created_by?: string | null
           updated_by?: string | null
@@ -182,6 +188,9 @@ export interface Database {
           actual_amount?: number
           notes?: string | null
           is_recurring?: boolean
+          is_completed?: boolean
+          completed_by?: string | null
+          completed_at?: string | null
           sort_order?: number
           created_by?: string | null
           updated_by?: string | null
@@ -320,6 +329,41 @@ export interface Database {
           created_at?: string
         }
       }
+      budget_audit_log: {
+        Row: {
+          id: string
+          period_id: string
+          user_id: string
+          action: 'update_planned' | 'update_actual' | 'update_income' | 'add_item' | 'delete_item' | 'rename_item'
+          item_id: string | null
+          item_name: string | null
+          old_value: string | null
+          new_value: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          period_id: string
+          user_id: string
+          action: 'update_planned' | 'update_actual' | 'update_income' | 'add_item' | 'delete_item' | 'rename_item'
+          item_id?: string | null
+          item_name?: string | null
+          old_value?: string | null
+          new_value?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          period_id?: string
+          user_id?: string
+          action?: 'update_planned' | 'update_actual' | 'update_income' | 'add_item' | 'delete_item' | 'rename_item'
+          item_id?: string | null
+          item_name?: string | null
+          old_value?: string | null
+          new_value?: string | null
+          created_at?: string
+        }
+      }
       notifications: {
         Row: {
           id: string
@@ -384,3 +428,4 @@ export type Message = Tables<'messages'>
 export type PurchaseRequest = Tables<'purchase_requests'>
 export type RequestVote = Tables<'request_votes'>
 export type Notification = Tables<'notifications'>
+export type BudgetAuditLog = Tables<'budget_audit_log'>

@@ -7,7 +7,7 @@ import { AddItemRow } from "./AddItemRow"
 import { DifferenceDisplay } from "@/components/shared/CurrencyDisplay"
 import { StatusBadge } from "@/components/shared/StatusBadge"
 import { formatCurrency } from "@/lib/utils/currency"
-import { Trash2, ChevronDown, ChevronRight } from "lucide-react"
+import { Trash2, ChevronDown, ChevronRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { BudgetCategory, BudgetItem } from "@/lib/supabase/types"
 
@@ -17,9 +17,10 @@ interface CategoryGroupProps {
   onUpdateItem: (id: string, field: "planned_amount" | "actual_amount", value: number) => void
   onAddItem: (categoryId: string, name: string) => void
   onDeleteItem: (id: string) => void
+  onToggleComplete: (id: string, completed: boolean) => void
 }
 
-export function CategoryGroup({ category, items, onUpdateItem, onAddItem, onDeleteItem }: CategoryGroupProps) {
+export function CategoryGroup({ category, items, onUpdateItem, onAddItem, onDeleteItem, onToggleComplete }: CategoryGroupProps) {
   const [collapsed, setCollapsed] = useState(false)
   const subtotalPlanned = items.reduce((s, i) => s + Number(i.planned_amount), 0)
   const subtotalActual = items.reduce((s, i) => s + Number(i.actual_amount), 0)
@@ -67,8 +68,22 @@ export function CategoryGroup({ category, items, onUpdateItem, onAddItem, onDele
       {!collapsed && (
         <>
           {items.map((item) => (
-            <TableRow key={item.id} className="group border-[#2A2D3A] hover:bg-[#1E2130]" style={{ borderLeft: `2px solid ${category.color || '#6366F1'}20` }}>
-              <TableCell className="pl-10 text-sm text-white">{item.name}</TableCell>
+            <TableRow key={item.id} className={`group border-[#2A2D3A] hover:bg-[#1E2130] ${item.is_completed ? "opacity-60" : ""}`} style={{ borderLeft: `2px solid ${category.color || '#6366F1'}20` }}>
+              <TableCell className="pl-8 text-sm text-white">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onToggleComplete(item.id, !item.is_completed)}
+                    className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded border transition-colors ${
+                      item.is_completed
+                        ? "border-emerald-500 bg-emerald-500/20 text-emerald-400"
+                        : "border-[#2A2D3A] hover:border-[#94A3B8]"
+                    }`}
+                  >
+                    {item.is_completed && <Check className="h-3 w-3" />}
+                  </button>
+                  <span className={item.is_completed ? "line-through text-[#94A3B8]" : ""}>{item.name}</span>
+                </div>
+              </TableCell>
               <TableCell className="w-36 p-0">
                 <InlineEditCell
                   value={Number(item.planned_amount)}

@@ -23,6 +23,8 @@ import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { DollarSign } from "lucide-react"
 import { useState } from "react"
+import { logBudgetChange } from "@/lib/utils/auditLog"
+import { BudgetActivityLog } from "@/components/budget/BudgetActivityLog"
 
 export default function BudgetPage() {
   const [month, setMonth] = useState(getCurrentMonth())
@@ -38,6 +40,9 @@ export default function BudgetPage() {
   const [incomeValue, setIncomeValue] = useState("")
 
   const handleUpdateItem = useCallback(async (id: string, field: "planned_amount" | "actual_amount", value: number) => {
+    const oldItem = useBudgetStore.getState().items.find((i) => i.id === id)
+    const oldValue = oldItem ? Number(oldItem[field]) : 0
+
     updateItem(id, { [field]: value })
 
     const supabase = createClient()
@@ -50,8 +55,18 @@ export default function BudgetPage() {
 
     if (error) {
       toast.error("Failed to update: " + error.message)
+    } else if (user && period && oldValue !== value) {
+      logBudgetChange({
+        period_id: period.id,
+        user_id: user.id,
+        action: field === "planned_amount" ? "update_planned" : "update_actual",
+        item_id: id,
+        item_name: oldItem?.name ?? null,
+        old_value: String(oldValue),
+        new_value: String(value),
+      })
     }
-  }, [updateItem])
+  }, [updateItem, period])
 
   const handleAddItem = useCallback(async (categoryId: string, name: string) => {
     if (!period) return
@@ -86,26 +101,71 @@ export default function BudgetPage() {
     if (data) {
       addItemToStore(data)
       toast.success(`Added "${name}"`)
+      if (user) {
+        logBudgetChange({
+          period_id: period.id,
+          user_id: user.id,
+          action: "add_item",
+          item_id: data.id,
+          item_name: name,
+        })
+      }
     }
   }, [period, items, addItemToStore])
 
   const handleDeleteItem = useCallback(async (id: string) => {
+    const deletedItem = useBudgetStore.getState().items.find((i) => i.id === id)
     removeItem(id)
 
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
     const { error } = await supabase.from("budget_items").delete().eq("id", id)
 
     if (error) {
       toast.error("Failed to delete: " + error.message)
+    } else if (user && period) {
+      logBudgetChange({
+        period_id: period.id,
+        user_id: user.id,
+        action: "delete_item",
+        item_id: id,
+        item_name: deletedItem?.name ?? null,
+      })
     }
-  }, [removeItem])
+  }, [removeItem, period])
+
+  const handleToggleComplete = useCallback(async (id: string, completed: boolean) => {
+    updateItem(id, { is_completed: completed })
+
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const { error } = await supabase
+      .from("budget_items")
+      .update({
+        is_completed: completed,
+        completed_by: completed ? user?.id ?? null : null,
+        completed_at: completed ? new Date().toISOString() : null,
+        updated_by: user?.id,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+
+    if (error) {
+      toast.error("Failed to update: " + error.message)
+      updateItem(id, { is_completed: !completed })
+    }
+  }, [updateItem])
 
   const handleIncomeUpdate = async () => {
     if (!period) return
     const num = parseFloat(incomeValue.replace(/[$,]/g, ""))
     if (isNaN(num)) { setEditingIncome(false); return }
 
+    const oldIncome = period.total_income
+
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
     const { error } = await supabase
       .from("budget_periods")
       .update({ total_income: num })
@@ -116,6 +176,15 @@ export default function BudgetPage() {
     } else {
       useBudgetStore.getState().setPeriod({ ...period, total_income: num })
       toast.success("Income updated")
+      if (user && oldIncome !== num) {
+        logBudgetChange({
+          period_id: period.id,
+          user_id: user.id,
+          action: "update_income",
+          old_value: String(oldIncome),
+          new_value: String(num),
+        })
+      }
     }
     setEditingIncome(false)
   }
@@ -188,6 +257,7 @@ export default function BudgetPage() {
                     onUpdateItem={handleUpdateItem}
                     onAddItem={handleAddItem}
                     onDeleteItem={handleDeleteItem}
+                    onToggleComplete={handleToggleComplete}
                   />
                 )
               })}
@@ -223,6 +293,8 @@ export default function BudgetPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <BudgetActivityLog periodId={period?.id} />
     </div>
   )
 }
