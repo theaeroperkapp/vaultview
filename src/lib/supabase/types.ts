@@ -65,19 +65,19 @@ export interface Database {
         Row: {
           household_id: string
           user_id: string
-          role: 'owner' | 'editor' | 'viewer'
+          role: 'admin' | 'member'
           joined_at: string
         }
         Insert: {
           household_id: string
           user_id: string
-          role?: 'owner' | 'editor' | 'viewer'
+          role?: 'admin' | 'member'
           joined_at?: string
         }
         Update: {
           household_id?: string
           user_id?: string
-          role?: 'owner' | 'editor' | 'viewer'
+          role?: 'admin' | 'member'
           joined_at?: string
         }
       }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Zap, ThumbsUp, ThumbsDown, Calendar, Clock } from "lucide-react"
+import { Zap, ThumbsUp, ThumbsDown, Calendar, Clock, ShieldCheck } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,7 @@ interface RequestCardProps {
   members: Profile[]
   currentUserId: string
   householdId: string
+  isAdmin?: boolean
 }
 
 const STATUS_STYLES: Record<PurchaseRequest["status"], string> = {
@@ -44,9 +45,11 @@ export function RequestCard({
   members,
   currentUserId,
   householdId,
+  isAdmin,
 }: RequestCardProps) {
   const [voting, setVoting] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  const [approving, setApproving] = useState(false)
   const { addVote, updateRequest } = useRequestStore()
 
   const isRequester = request.requester_id === currentUserId
@@ -111,6 +114,44 @@ export function RequestCard({
       toast.success("Request cancelled")
     }
     setCancelling(false)
+  }
+
+  const handleExecutiveApprove = async () => {
+    setApproving(true)
+    const supabase = createClient()
+
+    const { error } = await supabase
+      .from("purchase_requests")
+      .update({ status: "approved", updated_at: new Date().toISOString() })
+      .eq("id", request.id)
+
+    if (error) {
+      toast.error("Failed to approve: " + error.message)
+    } else {
+      updateRequest(request.id, { status: "approved" })
+      toast.success("Request approved (executive decision)")
+
+      // Notify other household members (exclude the admin who approved)
+      const { data: memberRows } = await supabase
+        .from("household_members")
+        .select("user_id")
+        .eq("household_id", householdId)
+        .neq("user_id", currentUserId)
+
+      if (memberRows && memberRows.length > 0) {
+        const notifications = memberRows.map((m) => ({
+          household_id: householdId,
+          user_id: m.user_id,
+          type: "request_approved" as const,
+          title: `Request approved: "${request.title}"`,
+          body: `Admin approved this $${Number(request.amount).toFixed(2)} request (executive decision)`,
+          reference_id: request.id,
+        }))
+
+        await supabase.from("notifications").insert(notifications)
+      }
+    }
+    setApproving(false)
   }
 
   return (
@@ -202,6 +243,17 @@ export function RequestCard({
                 Deny
               </Button>
             </>
+          )}
+          {isRequester && isAdmin && (
+            <Button
+              size="sm"
+              className="gap-1.5 bg-emerald-600 hover:bg-emerald-700"
+              disabled={approving}
+              onClick={handleExecutiveApprove}
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {approving ? "Approving..." : "Approve"}
+            </Button>
           )}
           {isRequester && (
             <Button

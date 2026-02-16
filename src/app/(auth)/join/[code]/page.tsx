@@ -46,7 +46,7 @@ export default function JoinPage() {
     const { error } = await supabase.from("household_members").insert({
       household_id: household.id,
       user_id: user.id,
-      role: "editor",
+      role: "member",
     })
 
     if (error) {

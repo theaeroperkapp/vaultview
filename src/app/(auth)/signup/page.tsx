@@ -65,7 +65,7 @@ export default function SignupPage() {
     await supabase.from("household_members").insert({
       household_id: household.id,
       user_id: authData.user.id,
-      role: "owner",
+      role: "admin",
     })
 
     // 4. Seed with default categories

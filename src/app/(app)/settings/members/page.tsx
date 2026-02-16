@@ -92,7 +92,7 @@ export default function MembersPage() {
     }
   }
 
-  const isOwner = members.find((m) => m.user_id === currentUserId)?.role === "owner"
+  const isAdmin = members.find((m) => m.user_id === currentUserId)?.role === "admin"
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 animate-slide-in">
@@ -133,15 +133,15 @@ export default function MembersPage() {
                 </p>
                 <p className="text-xs text-[#94A3B8]">{member.profile?.email}</p>
               </div>
-              {isOwner && member.user_id !== currentUserId ? (
+              {isAdmin && member.user_id !== currentUserId ? (
                 <div className="flex items-center gap-2">
                   <Select value={member.role} onValueChange={(v) => handleRoleChange(member.user_id, v)}>
-                    <SelectTrigger className="w-24 h-8 border-[#2A2D3A] bg-[#1A1D27] text-white text-xs">
+                    <SelectTrigger className="w-28 h-8 border-[#2A2D3A] bg-[#1A1D27] text-white text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="border-[#2A2D3A] bg-[#1A1D27]">
-                      <SelectItem value="editor" className="text-white">Editor</SelectItem>
-                      <SelectItem value="viewer" className="text-white">Viewer</SelectItem>
+                      <SelectItem value="admin" className="text-white">Admin</SelectItem>
+                      <SelectItem value="member" className="text-white">All Access</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button
@@ -155,7 +155,7 @@ export default function MembersPage() {
                 </div>
               ) : (
                 <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 text-xs">
-                  {member.role}
+                  {member.role === "admin" ? "Admin" : "All Access"}
                 </Badge>
               )}
             </div>

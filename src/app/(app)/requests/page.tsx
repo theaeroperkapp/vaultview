@@ -16,6 +16,7 @@ import type { Profile } from "@/lib/supabase/types"
 export default function RequestsPage() {
   const { household } = useHousehold()
   const [userId, setUserId] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [members, setMembers] = useState<Profile[]>([])
   const [showNewForm, setShowNewForm] = useState(false)
   const [activeTab, setActiveTab] = useState<"active" | "history">("active")
@@ -48,6 +49,18 @@ export default function RequestsPage() {
           .in("id", userIds)
 
         if (profiles) setMembers(profiles as Profile[])
+
+        // Check if current user is admin
+        if (user) {
+          const { data: myMembership } = await supabase
+            .from("household_members")
+            .select("role")
+            .eq("household_id", household!.id)
+            .eq("user_id", user.id)
+            .single()
+
+          if (myMembership?.role === "admin") setIsAdmin(true)
+        }
       }
     }
 
@@ -141,6 +154,7 @@ export default function RequestsPage() {
               members={members}
               currentUserId={userId || ""}
               householdId={household?.id || ""}
+              isAdmin={isAdmin}
             />
           ))}
         </div>
