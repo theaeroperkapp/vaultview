@@ -14,7 +14,7 @@ import { CategoryGroup } from "@/components/budget/CategoryGroup"
 import { useBudgetPeriod } from "@/hooks/useBudgetPeriod"
 import { useBudgetRealtime } from "@/hooks/useBudgetRealtime"
 import { useHousehold } from "@/hooks/useHousehold"
-import { useBudgetStore } from "@/stores/budgetStore"
+import { useBudgetStore, useBudgetTotals } from "@/stores/budgetStore"
 import { createClient } from "@/lib/supabase/client"
 import { formatCurrency } from "@/lib/utils/currency"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -34,7 +34,7 @@ export default function BudgetPage() {
   const { period, categories, items, isLoading, updateItem, addItem: addItemToStore, removeItem } = useBudgetStore()
   useBudgetRealtime(period?.id)
 
-  const totals = useBudgetStore((s) => s.getTotals())
+  const totals = useBudgetTotals()
   const [editingIncome, setEditingIncome] = useState(false)
   const [incomeValue, setIncomeValue] = useState("")
 

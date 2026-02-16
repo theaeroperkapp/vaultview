@@ -16,7 +16,10 @@ export function useBudgetPeriod(month: number, year: number) {
   } = useBudgetStore()
 
   const fetchBudgetData = useCallback(async () => {
-    if (!household) return
+    if (!household) {
+      setLoading(false)
+      return
+    }
 
     setLoading(true)
     setError(null)

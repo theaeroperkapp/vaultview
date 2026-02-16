@@ -7,7 +7,7 @@ import { TrendLineChart } from "@/components/analytics/TrendLineChart"
 import { CategoryAreaChart } from "@/components/analytics/CategoryAreaChart"
 import { useBudgetPeriod } from "@/hooks/useBudgetPeriod"
 import { useHousehold } from "@/hooks/useHousehold"
-import { useBudgetStore } from "@/stores/budgetStore"
+import { useBudgetStore, useBudgetTotals } from "@/stores/budgetStore"
 import { createClient } from "@/lib/supabase/client"
 import { getCurrentMonth, getCurrentYear, getMonthName } from "@/lib/utils/dates"
 import { formatCurrency } from "@/lib/utils/currency"
@@ -31,7 +31,7 @@ export default function AnalyticsPage() {
 
   useBudgetPeriod(month, year)
   const { categories, items, isLoading } = useBudgetStore()
-  const totals = useBudgetStore((s) => s.getTotals())
+  const totals = useBudgetTotals()
 
   const [trendData, setTrendData] = useState<TrendData[]>([])
 

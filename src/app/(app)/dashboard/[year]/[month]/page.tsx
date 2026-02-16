@@ -10,7 +10,7 @@ import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { useBudgetPeriod } from "@/hooks/useBudgetPeriod"
 import { useBudgetRealtime } from "@/hooks/useBudgetRealtime"
 import { useHousehold } from "@/hooks/useHousehold"
-import { useBudgetStore } from "@/stores/budgetStore"
+import { useBudgetStore, useBudgetTotals } from "@/stores/budgetStore"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ export default function DashboardPage({ params }: { params: Promise<{ year: stri
   const { period, categories, items, isLoading } = useBudgetStore()
   useBudgetRealtime(period?.id)
 
-  const totals = useBudgetStore((s) => s.getTotals())
+  const totals = useBudgetTotals()
 
   if (isLoading) {
     return (

@@ -6,7 +6,8 @@ import { useChatStore } from "@/stores/chatStore"
 import type { Message } from "@/lib/supabase/types"
 
 export function useChatRealtime(householdId: string | undefined) {
-  const { addMessage, setUnreadCount, unreadCount } = useChatStore()
+  const addMessage = useChatStore((s) => s.addMessage)
+  const setUnreadCount = useChatStore((s) => s.setUnreadCount)
 
   useEffect(() => {
     if (!householdId) return
@@ -29,7 +30,8 @@ export function useChatRealtime(householdId: string | undefined) {
           // Check if from another user
           const { data: { user } } = await supabase.auth.getUser()
           if (newMessage.sender_id !== user?.id) {
-            setUnreadCount(unreadCount + 1)
+            const current = useChatStore.getState().unreadCount
+            setUnreadCount(current + 1)
           }
 
           addMessage(newMessage)
@@ -40,5 +42,5 @@ export function useChatRealtime(householdId: string | undefined) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [householdId, addMessage, setUnreadCount, unreadCount])
+  }, [householdId, addMessage, setUnreadCount])
 }

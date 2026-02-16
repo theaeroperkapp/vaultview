@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { useShallow } from 'zustand/react/shallow'
 import type { BudgetCategory, BudgetItem, BudgetPeriod } from '@/lib/supabase/types'
 
 interface BudgetState {
@@ -17,10 +18,6 @@ interface BudgetState {
   updateItem: (id: string, updates: Partial<BudgetItem>) => void
   addItem: (item: BudgetItem) => void
   removeItem: (id: string) => void
-
-  getItemsByCategory: (categoryId: string) => BudgetItem[]
-  getCategorySubtotal: (categoryId: string) => { planned: number; actual: number; difference: number }
-  getTotals: () => { totalPlanned: number; totalActual: number; totalDifference: number; income: number; balance: number }
 }
 
 export const useBudgetStore = create<BudgetState>((set, get) => ({
@@ -52,31 +49,35 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
     set((state) => ({
       items: state.items.filter((item) => item.id !== id),
     })),
-
-  getItemsByCategory: (categoryId) => {
-    return get().items
-      .filter((item) => item.category_id === categoryId)
-      .sort((a, b) => a.sort_order - b.sort_order)
-  },
-
-  getCategorySubtotal: (categoryId) => {
-    const items = get().items.filter((item) => item.category_id === categoryId)
-    const planned = items.reduce((sum, item) => sum + Number(item.planned_amount), 0)
-    const actual = items.reduce((sum, item) => sum + Number(item.actual_amount), 0)
-    return { planned, actual, difference: planned - actual }
-  },
-
-  getTotals: () => {
-    const { items, period } = get()
-    const totalPlanned = items.reduce((sum, item) => sum + Number(item.planned_amount), 0)
-    const totalActual = items.reduce((sum, item) => sum + Number(item.actual_amount), 0)
-    const income = Number(period?.total_income || 0)
-    return {
-      totalPlanned,
-      totalActual,
-      totalDifference: totalPlanned - totalActual,
-      income,
-      balance: income - totalActual,
-    }
-  },
 }))
+
+// Derived selectors as hooks (stable references with shallow comparison)
+export function useBudgetTotals() {
+  return useBudgetStore(
+    useShallow((s) => {
+      const totalPlanned = s.items.reduce((sum, item) => sum + Number(item.planned_amount), 0)
+      const totalActual = s.items.reduce((sum, item) => sum + Number(item.actual_amount), 0)
+      const income = Number(s.period?.total_income || 0)
+      return {
+        totalPlanned,
+        totalActual,
+        totalDifference: totalPlanned - totalActual,
+        income,
+        balance: income - totalActual,
+      }
+    })
+  )
+}
+
+export function getItemsByCategory(items: BudgetItem[], categoryId: string) {
+  return items
+    .filter((item) => item.category_id === categoryId)
+    .sort((a, b) => a.sort_order - b.sort_order)
+}
+
+export function getCategorySubtotal(items: BudgetItem[], categoryId: string) {
+  const catItems = items.filter((item) => item.category_id === categoryId)
+  const planned = catItems.reduce((sum, item) => sum + Number(item.planned_amount), 0)
+  const actual = catItems.reduce((sum, item) => sum + Number(item.actual_amount), 0)
+  return { planned, actual, difference: planned - actual }
+}
