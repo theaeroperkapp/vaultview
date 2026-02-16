@@ -21,7 +21,7 @@ interface CategoryGroupProps {
 }
 
 export function CategoryGroup({ category, items, onUpdateItem, onAddItem, onDeleteItem, onToggleComplete }: CategoryGroupProps) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
   const subtotalPlanned = items.reduce((s, i) => s + Number(i.planned_amount), 0)
   const subtotalActual = items.reduce((s, i) => s + Number(i.actual_amount), 0)
   const pct = subtotalPlanned > 0 ? (subtotalActual / subtotalPlanned) * 100 : 0
