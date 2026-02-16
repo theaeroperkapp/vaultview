@@ -12,11 +12,13 @@ import {
   Vault,
   TrendingUp,
   CalendarRange,
+  ShoppingCart,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useChatStore } from "@/stores/chatStore"
+import { useRequestCounts } from "@/stores/requestStore"
 import { useSidebarStore } from "@/stores/sidebarStore"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
@@ -35,6 +37,7 @@ const navItems = [
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/net-worth", label: "Net Worth", icon: TrendingUp },
   { href: "/year-overview", label: "Year Overview", icon: CalendarRange },
+  { href: "/requests", label: "Requests", icon: ShoppingCart },
   { href: "/chat", label: "Chat", icon: MessageCircle },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
@@ -43,6 +46,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const unreadCount = useChatStore((s) => s.unreadCount)
+  const { pendingCount } = useRequestCounts()
   const { collapsed, toggle } = useSidebarStore()
 
   const handleSignOut = async () => {
@@ -96,10 +100,18 @@ export function Sidebar() {
                       {unreadCount}
                     </Badge>
                   )}
+                  {item.label === "Requests" && pendingCount > 0 && (
+                    <Badge className="ml-auto bg-amber-500 text-xs text-white hover:bg-amber-600">
+                      {pendingCount}
+                    </Badge>
+                  )}
                 </>
               )}
               {collapsed && item.label === "Chat" && unreadCount > 0 && (
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-emerald-500" />
+              )}
+              {collapsed && item.label === "Requests" && pendingCount > 0 && (
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-500" />
               )}
             </Link>
           )

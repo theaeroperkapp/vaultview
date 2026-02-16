@@ -250,6 +250,111 @@ export interface Database {
           created_at?: string
         }
       }
+      purchase_requests: {
+        Row: {
+          id: string
+          household_id: string
+          requester_id: string
+          title: string
+          description: string | null
+          amount: number
+          category_id: string | null
+          is_emergency: boolean
+          purchase_date: string
+          vote_deadline: string
+          status: 'pending' | 'approved' | 'denied' | 'cancelled'
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          household_id: string
+          requester_id: string
+          title: string
+          description?: string | null
+          amount: number
+          category_id?: string | null
+          is_emergency?: boolean
+          purchase_date: string
+          vote_deadline: string
+          status?: 'pending' | 'approved' | 'denied' | 'cancelled'
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          household_id?: string
+          requester_id?: string
+          title?: string
+          description?: string | null
+          amount?: number
+          category_id?: string | null
+          is_emergency?: boolean
+          purchase_date?: string
+          vote_deadline?: string
+          status?: 'pending' | 'approved' | 'denied' | 'cancelled'
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      request_votes: {
+        Row: {
+          id: string
+          request_id: string
+          voter_id: string
+          vote: 'yes' | 'no'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          request_id: string
+          voter_id: string
+          vote: 'yes' | 'no'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          request_id?: string
+          voter_id?: string
+          vote?: 'yes' | 'no'
+          created_at?: string
+        }
+      }
+      notifications: {
+        Row: {
+          id: string
+          household_id: string
+          user_id: string
+          type: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove'
+          title: string
+          body: string | null
+          reference_id: string | null
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          household_id: string
+          user_id: string
+          type: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove'
+          title: string
+          body?: string | null
+          reference_id?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          household_id?: string
+          user_id?: string
+          type?: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove'
+          title?: string
+          body?: string | null
+          reference_id?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+      }
     }
     Functions: {
       seed_january_2026: {
@@ -276,3 +381,6 @@ export type BudgetCategory = Tables<'budget_categories'>
 export type BudgetItem = Tables<'budget_items'>
 export type Receipt = Tables<'receipts'>
 export type Message = Tables<'messages'>
+export type PurchaseRequest = Tables<'purchase_requests'>
+export type RequestVote = Tables<'request_votes'>
+export type Notification = Tables<'notifications'>
