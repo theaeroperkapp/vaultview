@@ -24,7 +24,7 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
   period: null,
   categories: [],
   items: [],
-  isLoading: true,
+  isLoading: false,
   error: null,
 
   setPeriod: (period) => set({ period }),

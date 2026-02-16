@@ -21,7 +21,9 @@ export function useBudgetPeriod(month: number, year: number) {
       return
     }
 
-    setLoading(true)
+    // Only show skeleton if we have no data yet (first load)
+    const hasData = useBudgetStore.getState().items.length > 0
+    if (!hasData) setLoading(true)
     setError(null)
     const supabase = createClient()
 
