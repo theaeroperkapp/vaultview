@@ -26,8 +26,8 @@ import { DollarSign } from "lucide-react"
 import { useState } from "react"
 
 export default function BudgetPage() {
-  const month = getCurrentMonth()
-  const year = getCurrentYear()
+  const [month, setMonth] = useState(getCurrentMonth())
+  const [year, setYear] = useState(getCurrentYear())
   const { household } = useHousehold()
 
   useBudgetPeriod(month, year)
@@ -134,7 +134,7 @@ export default function BudgetPage() {
   return (
     <div className="space-y-6 animate-slide-in">
       <div className="flex items-center justify-between">
-        <MonthSelector month={month} year={year} />
+        <MonthSelector month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y) }} />
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-lg border border-[#2A2D3A] bg-[#1A1D27] px-3 py-2">
             <DollarSign className="h-4 w-4 text-emerald-400" />

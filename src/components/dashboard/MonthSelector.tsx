@@ -8,13 +8,30 @@ import { getMonthName, getPreviousMonth, getNextMonth } from "@/lib/utils/dates"
 interface MonthSelectorProps {
   month: number
   year: number
+  onChange?: (month: number, year: number) => void
 }
 
-export function MonthSelector({ month, year }: MonthSelectorProps) {
+export function MonthSelector({ month, year, onChange }: MonthSelectorProps) {
   const router = useRouter()
 
   const prev = getPreviousMonth(month, year)
   const next = getNextMonth(month, year)
+
+  const handlePrev = () => {
+    if (onChange) {
+      onChange(prev.month, prev.year)
+    } else {
+      router.push(`/dashboard/${prev.year}/${prev.month}`)
+    }
+  }
+
+  const handleNext = () => {
+    if (onChange) {
+      onChange(next.month, next.year)
+    } else {
+      router.push(`/dashboard/${next.year}/${next.month}`)
+    }
+  }
 
   return (
     <div className="flex items-center gap-3">
@@ -22,7 +39,7 @@ export function MonthSelector({ month, year }: MonthSelectorProps) {
         variant="ghost"
         size="icon"
         className="text-[#94A3B8] hover:text-white"
-        onClick={() => router.push(`/dashboard/${prev.year}/${prev.month}`)}
+        onClick={handlePrev}
       >
         <ChevronLeft className="h-5 w-5" />
       </Button>
@@ -33,7 +50,7 @@ export function MonthSelector({ month, year }: MonthSelectorProps) {
         variant="ghost"
         size="icon"
         className="text-[#94A3B8] hover:text-white"
-        onClick={() => router.push(`/dashboard/${next.year}/${next.month}`)}
+        onClick={handleNext}
       >
         <ChevronRight className="h-5 w-5" />
       </Button>

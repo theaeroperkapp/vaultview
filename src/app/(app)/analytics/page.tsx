@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingDown } from "lucide-react"
+import { MonthSelector } from "@/components/dashboard/MonthSelector"
 
 interface TrendData {
   month: number
@@ -25,8 +26,8 @@ interface TrendData {
 }
 
 export default function AnalyticsPage() {
-  const month = getCurrentMonth()
-  const year = getCurrentYear()
+  const [month, setMonth] = useState(getCurrentMonth())
+  const [year, setYear] = useState(getCurrentYear())
   const { household } = useHousehold()
 
   useBudgetPeriod(month, year)
@@ -120,9 +121,9 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6 animate-slide-in">
-      <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-playfair)' }}>
-        Analytics
-      </h1>
+      <div className="flex items-center justify-between">
+        <MonthSelector month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y) }} />
+      </div>
 
       {/* Top row */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

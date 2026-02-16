@@ -26,24 +26,23 @@ export function useBudgetPeriod(month: number, year: number) {
     const supabase = createClient()
 
     try {
-      // Fetch or create period
-      let { data: period } = await supabase
+      // Fetch period (use maybeSingle to avoid 406 when no rows)
+      const { data: period, error: periodError } = await supabase
         .from("budget_periods")
         .select("*")
         .eq("household_id", household.id)
         .eq("month", month)
         .eq("year", year)
-        .single()
+        .maybeSingle()
+
+      if (periodError) throw periodError
 
       if (!period) {
-        const { data: newPeriod, error: createError } = await supabase
-          .from("budget_periods")
-          .insert({ household_id: household.id, month, year })
-          .select()
-          .single()
-
-        if (createError) throw createError
-        period = newPeriod
+        // No period for this month — show empty state
+        setPeriod(null)
+        setCategories([])
+        setItems([])
+        return
       }
 
       setPeriod(period)
