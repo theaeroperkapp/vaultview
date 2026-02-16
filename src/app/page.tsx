@@ -1,65 +1,82 @@
-import Image from "next/image";
+import Link from "next/link"
+import { Vault, ArrowRight, BarChart3, MessageCircle, Shield } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex min-h-screen flex-col bg-[#0F1117]">
+      {/* Header */}
+      <header className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center gap-2">
+          <Vault className="h-7 w-7 text-emerald-500" />
+          <span className="text-xl font-bold text-white">
+            Vault<span className="text-emerald-500">View</span>
+          </span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="flex items-center gap-3">
+          <Link href="/login">
+            <Button variant="ghost" className="text-[#94A3B8] hover:text-white">
+              Sign In
+            </Button>
+          </Link>
+          <Link href="/signup">
+            <Button className="bg-emerald-500 text-white hover:bg-emerald-600">
+              Get Started
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+        <div className="mx-auto max-w-3xl">
+          <h1 className="mb-6 text-5xl font-bold leading-tight text-white md:text-6xl" style={{ fontFamily: 'var(--font-playfair)' }}>
+            Your finances,{" "}
+            <span className="text-emerald-500">beautifully managed</span>
+          </h1>
+          <p className="mb-8 text-lg text-[#94A3B8] md:text-xl">
+            Replace messy spreadsheets with a modern budget dashboard.
+            Track expenses, chat with your partner, and stay on top of your money — together.
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <Link href="/signup">
+              <Button size="lg" className="bg-emerald-500 text-white hover:bg-emerald-600">
+                Start Free <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="mx-auto mt-20 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-xl border border-[#2A2D3A] bg-[#1A1D27] p-6">
+            <BarChart3 className="mb-4 h-10 w-10 text-emerald-500" />
+            <h3 className="mb-2 text-lg font-semibold text-white">Visual Dashboard</h3>
+            <p className="text-sm text-[#94A3B8]">
+              Charts, summaries, and insights at a glance. No more scrolling through cells.
+            </p>
+          </div>
+          <div className="rounded-xl border border-[#2A2D3A] bg-[#1A1D27] p-6">
+            <MessageCircle className="mb-4 h-10 w-10 text-emerald-500" />
+            <h3 className="mb-2 text-lg font-semibold text-white">Built-in Chat</h3>
+            <p className="text-sm text-[#94A3B8]">
+              Discuss budget changes in real-time. Get alerts when your partner updates an expense.
+            </p>
+          </div>
+          <div className="rounded-xl border border-[#2A2D3A] bg-[#1A1D27] p-6">
+            <Shield className="mb-4 h-10 w-10 text-emerald-500" />
+            <h3 className="mb-2 text-lg font-semibold text-white">Secure & Private</h3>
+            <p className="text-sm text-[#94A3B8]">
+              Row-level security ensures only your household can see your data.
+            </p>
+          </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[#2A2D3A] px-6 py-6 text-center text-sm text-[#94A3B8]">
+        VaultView &copy; {new Date().getFullYear()}. Built with care.
+      </footer>
     </div>
-  );
+  )
 }
