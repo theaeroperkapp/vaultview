@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MessageCircle } from "lucide-react"
@@ -9,9 +10,24 @@ import { useChatStore } from "@/stores/chatStore"
 import { Badge } from "@/components/ui/badge"
 import type { Profile } from "@/lib/supabase/types"
 
+const PAGE_TITLES: Record<string, string> = {
+  "/dashboard": "Dashboard",
+  "/budget": "Budget Editor",
+  "/analytics": "Analytics",
+  "/net-worth": "Net Worth",
+  "/year-overview": "Year Overview",
+  "/chat": "Household Chat",
+  "/settings": "Settings",
+}
+
 export function TopBar() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const { unreadCount, toggleDrawer } = useChatStore()
+  const pathname = usePathname()
+
+  const pageTitle = Object.entries(PAGE_TITLES).find(([path]) =>
+    pathname.startsWith(path)
+  )?.[1] || "VaultView"
 
   useEffect(() => {
     const supabase = createClient()
@@ -30,8 +46,13 @@ export function TopBar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#2A2D3A] bg-[#0F1117]/80 px-6 backdrop-blur-sm">
-      <div />
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#2A2D3A]/50 bg-[#0F1117]/60 px-6 backdrop-blur-xl">
+      <h1
+        className="text-lg font-semibold text-white/90"
+        style={{ fontFamily: 'var(--font-playfair)' }}
+      >
+        {pageTitle}
+      </h1>
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"

@@ -17,7 +17,6 @@ import { useHousehold } from "@/hooks/useHousehold"
 import { useBudgetStore, useBudgetTotals } from "@/stores/budgetStore"
 import { createClient } from "@/lib/supabase/client"
 import { formatCurrency } from "@/lib/utils/currency"
-import { Skeleton } from "@/components/ui/skeleton"
 import { MonthSelector } from "@/components/dashboard/MonthSelector"
 import { getCurrentMonth, getCurrentYear } from "@/lib/utils/dates"
 import { toast } from "sonner"
@@ -39,7 +38,6 @@ export default function BudgetPage() {
   const [incomeValue, setIncomeValue] = useState("")
 
   const handleUpdateItem = useCallback(async (id: string, field: "planned_amount" | "actual_amount", value: number) => {
-    // Optimistic update
     updateItem(id, { [field]: value })
 
     const supabase = createClient()
@@ -125,8 +123,8 @@ export default function BudgetPage() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-10 w-64 bg-[#1A1D27]" />
-        <Skeleton className="h-[600px] w-full bg-[#1A1D27]" />
+        <div className="h-10 w-64 animate-shimmer rounded-lg" />
+        <div className="h-[600px] w-full animate-shimmer rounded-xl" />
       </div>
     )
   }
@@ -136,7 +134,7 @@ export default function BudgetPage() {
       <div className="flex items-center justify-between">
         <MonthSelector month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y) }} />
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-lg border border-[#2A2D3A] bg-[#1A1D27] px-3 py-2">
+          <div className="glass-card flex items-center gap-2 px-4 py-2.5">
             <DollarSign className="h-4 w-4 text-emerald-400" />
             <span className="text-sm text-[#94A3B8]">Income:</span>
             {editingIncome ? (
@@ -160,14 +158,14 @@ export default function BudgetPage() {
         </div>
       </div>
 
-      <Card className="border-[#2A2D3A] bg-[#1A1D27]">
-        <CardHeader className="pb-2">
+      <Card className="glass-card overflow-hidden">
+        <CardHeader className="pb-2 bg-gradient-to-r from-emerald-500/5 to-transparent">
           <CardTitle className="text-base font-semibold text-white">Budget Editor</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="border-[#2A2D3A] hover:bg-transparent">
+              <TableRow className="border-[#2A2D3A]/50 hover:bg-transparent">
                 <TableHead className="text-[#94A3B8]">Item</TableHead>
                 <TableHead className="w-36 text-right text-[#94A3B8]">Planned</TableHead>
                 <TableHead className="w-36 text-right text-[#94A3B8]">Actual</TableHead>
@@ -195,7 +193,7 @@ export default function BudgetPage() {
               })}
 
               {/* Totals row */}
-              <TableRow className="border-[#2A2D3A] bg-[#0F1117] font-semibold hover:bg-[#0F1117]">
+              <TableRow className="border-[#2A2D3A] bg-gradient-to-r from-[#0F1117] to-[#1A1D27] font-semibold hover:bg-[#0F1117]">
                 <TableCell className="text-white">TOTAL</TableCell>
                 <TableCell className="text-right tabular-nums text-[#94A3B8]">
                   {formatCurrency(totals.totalPlanned)}
@@ -211,7 +209,7 @@ export default function BudgetPage() {
               </TableRow>
 
               {/* Balance row */}
-              <TableRow className="border-[#2A2D3A] bg-[#0F1117] hover:bg-[#0F1117]">
+              <TableRow className="border-[#2A2D3A] bg-gradient-to-r from-emerald-500/5 to-transparent hover:bg-emerald-500/5">
                 <TableCell className="text-sm font-semibold text-emerald-400">BALANCE (Income - Actual)</TableCell>
                 <TableCell />
                 <TableCell className={`text-right text-lg font-bold tabular-nums ${totals.balance >= 0 ? "text-emerald-400" : "text-red-400"}`}>

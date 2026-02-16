@@ -1,19 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils/currency"
 import { TrendingUp, TrendingDown } from "lucide-react"
+import { LineChart, Line, ResponsiveContainer } from "recharts"
+import type { PeriodSummary } from "@/hooks/useAllPeriods"
 
 interface BalanceCardProps {
   balance: number
   income: number
   expenses: number
+  trendData?: PeriodSummary[]
 }
 
-export function BalanceCard({ balance, income, expenses }: BalanceCardProps) {
+export function BalanceCard({ balance, income, expenses, trendData }: BalanceCardProps) {
   const [displayBalance, setDisplayBalance] = useState(0)
   const isPositive = balance >= 0
+  const savingsRate = income > 0 ? ((income - expenses) / income * 100) : 0
 
   useEffect(() => {
     const duration = 600
@@ -36,34 +39,72 @@ export function BalanceCard({ balance, income, expenses }: BalanceCardProps) {
     return () => clearInterval(timer)
   }, [balance])
 
+  // Last 6 months for sparkline
+  const sparkData = (trendData || []).slice(-6).map((d) => ({
+    value: d.balance,
+  }))
+
   return (
-    <Card className="border-[#2A2D3A] bg-gradient-to-br from-[#1A1D27] to-[#1E2130]">
-      <CardContent className="p-6">
-        <p className="mb-1 text-sm font-medium text-[#94A3B8]">Monthly Balance</p>
-        <div className="flex items-center gap-3">
-          <p
-            className={`animate-count-up text-4xl font-bold tabular-nums ${isPositive ? "text-emerald-400" : "text-red-400"}`}
-            style={{ fontFamily: 'var(--font-playfair)' }}
-          >
-            {formatCurrency(displayBalance)}
-          </p>
-          {isPositive ? (
-            <TrendingUp className="h-6 w-6 text-emerald-400" />
-          ) : (
-            <TrendingDown className="h-6 w-6 text-red-400" />
-          )}
-        </div>
-        <div className="mt-3 flex gap-6 text-sm">
-          <div>
-            <span className="text-[#94A3B8]">Income: </span>
-            <span className="font-medium text-emerald-400 tabular-nums">{formatCurrency(income)}</span>
-          </div>
-          <div>
-            <span className="text-[#94A3B8]">Expenses: </span>
-            <span className="font-medium text-red-400 tabular-nums">{formatCurrency(expenses)}</span>
+    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/10 via-[#1A1D27] to-[#1E2130] p-6 glow-border">
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-[#94A3B8]">Monthly Balance</p>
+          <div className="flex items-center gap-3">
+            <p
+              className={`animate-count-up text-5xl font-bold tabular-nums ${isPositive ? "text-emerald-400" : "text-red-400"}`}
+              style={{ fontFamily: 'var(--font-playfair)' }}
+            >
+              {formatCurrency(displayBalance)}
+            </p>
+            {isPositive ? (
+              <TrendingUp className="h-7 w-7 text-emerald-400" />
+            ) : (
+              <TrendingDown className="h-7 w-7 text-red-400" />
+            )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Sparkline */}
+        {sparkData.length > 1 && (
+          <div className="h-16 w-32">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={sparkData}>
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
+
+      {/* 3-column footer */}
+      <div className="mt-5 grid grid-cols-3 gap-4 border-t border-[#2A2D3A]/50 pt-4">
+        <div>
+          <p className="text-xs text-[#94A3B8]">Income</p>
+          <p className="text-lg font-semibold tabular-nums text-emerald-400">{formatCurrency(income)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-[#94A3B8]">Expenses</p>
+          <p className="text-lg font-semibold tabular-nums text-red-400">{formatCurrency(expenses)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-[#94A3B8]">Savings Rate</p>
+          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-semibold ${
+            savingsRate >= 20
+              ? "bg-emerald-500/10 text-emerald-400"
+              : savingsRate >= 0
+              ? "bg-amber-500/10 text-amber-400"
+              : "bg-red-500/10 text-red-400"
+          }`}>
+            {savingsRate.toFixed(1)}%
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }

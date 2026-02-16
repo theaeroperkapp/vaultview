@@ -90,12 +90,8 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 animate-slide-in">
-      <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-playfair)' }}>
-        Settings
-      </h1>
-
       {/* Profile */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D27]">
+      <Card className="glass-card">
         <CardHeader>
           <CardTitle className="text-white">Profile</CardTitle>
           <CardDescription className="text-[#94A3B8]">Manage your account details</CardDescription>
@@ -129,7 +125,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Household */}
-      <Card className="border-[#2A2D3A] bg-[#1A1D27]">
+      <Card className="glass-card">
         <CardHeader>
           <CardTitle className="text-white">Household</CardTitle>
           <CardDescription className="text-[#94A3B8]">Manage your household settings</CardDescription>
@@ -157,10 +153,10 @@ export default function SettingsPage() {
                 value={household ? `${typeof window !== 'undefined' ? window.location.origin : ''}/join/${household.invite_code}` : ''}
                 className="border-[#2A2D3A] bg-[#0F1117] text-[#94A3B8]"
               />
-              <Button variant="outline" size="icon" className="border-[#2A2D3A] text-[#94A3B8] hover:text-white" onClick={handleCopyInvite}>
+              <Button variant="outline" size="icon" className="border-[#2A2D3A] text-[#94A3B8] hover:text-white hover:border-emerald-500/20" onClick={handleCopyInvite}>
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" className="border-[#2A2D3A] text-[#94A3B8] hover:text-white" onClick={handleRegenInvite}>
+              <Button variant="outline" size="icon" className="border-[#2A2D3A] text-[#94A3B8] hover:text-white hover:border-emerald-500/20" onClick={handleRegenInvite}>
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>

@@ -5,13 +5,13 @@ import { MonthSelector } from "@/components/dashboard/MonthSelector"
 import { BalanceCard } from "@/components/dashboard/BalanceCard"
 import { SummaryCards } from "@/components/dashboard/SummaryCards"
 import { CategoryDonut } from "@/components/dashboard/CategoryDonut"
-import { BudgetTable } from "@/components/dashboard/BudgetTable"
+import { BudgetProgress } from "@/components/dashboard/BudgetProgress"
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed"
 import { useBudgetPeriod } from "@/hooks/useBudgetPeriod"
 import { useBudgetRealtime } from "@/hooks/useBudgetRealtime"
 import { useHousehold } from "@/hooks/useHousehold"
+import { useAllPeriods } from "@/hooks/useAllPeriods"
 import { useBudgetStore, useBudgetTotals } from "@/stores/budgetStore"
-import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Plus, Upload } from "lucide-react"
@@ -27,15 +27,16 @@ export default function DashboardPage({ params }: { params: Promise<{ year: stri
   useBudgetRealtime(period?.id)
 
   const totals = useBudgetTotals()
+  const { data: allPeriods } = useAllPeriods()
 
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-10 w-64 bg-[#1A1D27]" />
-        <Skeleton className="h-32 w-full bg-[#1A1D27]" />
+        <div className="h-10 w-64 animate-shimmer rounded-lg" />
+        <div className="h-40 w-full animate-shimmer rounded-xl" />
         <div className="grid grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-20 bg-[#1A1D27]" />
+            <div key={i} className="h-24 animate-shimmer rounded-xl" />
           ))}
         </div>
       </div>
@@ -61,29 +62,33 @@ export default function DashboardPage({ params }: { params: Promise<{ year: stri
         </div>
       </div>
 
-      {/* Balance Hero */}
+      {/* Balance Hero — Full Width + glow-border */}
       <BalanceCard
         balance={totals.balance}
         income={totals.income}
         expenses={totals.totalActual}
+        trendData={allPeriods}
       />
 
-      {/* Summary Cards */}
+      {/* Summary Cards x4 — glassmorphism + sparklines */}
       <SummaryCards
         totalPlanned={totals.totalPlanned}
         totalActual={totals.totalActual}
         totalDifference={totals.totalDifference}
         income={totals.income}
+        trendData={allPeriods}
       />
 
-      {/* Charts + Activity */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Budget Progress (2/3) + Category Donut (1/3) */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <BudgetProgress categories={categories} items={items} />
+        </div>
         <CategoryDonut categories={categories} items={items} />
-        <ActivityFeed householdId={household?.id} />
       </div>
 
-      {/* Budget Table */}
-      <BudgetTable categories={categories} items={items} />
+      {/* Activity Feed — compact, full width */}
+      <ActivityFeed householdId={household?.id} />
     </div>
   )
 }

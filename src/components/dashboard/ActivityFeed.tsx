@@ -45,12 +45,12 @@ export function ActivityFeed({ householdId }: ActivityFeedProps) {
   }
 
   return (
-    <Card className="border-[#2A2D3A] bg-[#1A1D27]">
+    <Card className="glass-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-semibold text-white">Recent Activity</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <ScrollArea className="h-[280px]">
+        <ScrollArea className="h-[240px]">
           {messages.length === 0 ? (
             <div className="flex h-[200px] items-center justify-center text-sm text-[#94A3B8]">
               No activity yet
@@ -58,7 +58,7 @@ export function ActivityFeed({ householdId }: ActivityFeedProps) {
           ) : (
             <div className="space-y-0 px-4">
               {messages.map((msg) => (
-                <div key={msg.id} className="flex items-start gap-3 border-b border-[#2A2D3A] py-3 last:border-0">
+                <div key={msg.id} className="flex items-start gap-3 border-b border-[#2A2D3A]/50 py-3 last:border-0">
                   <div className={`mt-0.5 rounded-full p-1.5 ${
                     msg.message_type === "budget_alert"
                       ? "bg-amber-500/10"

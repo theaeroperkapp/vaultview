@@ -4,14 +4,13 @@ import { useEffect, useState } from "react"
 import { PlannedVsActualBar } from "@/components/analytics/PlannedVsActualBar"
 import { SavingsGauge } from "@/components/analytics/SavingsGauge"
 import { TrendLineChart } from "@/components/analytics/TrendLineChart"
-import { CategoryAreaChart } from "@/components/analytics/CategoryAreaChart"
+import { TopCategoriesRank } from "@/components/analytics/TopCategoriesRank"
 import { useBudgetPeriod } from "@/hooks/useBudgetPeriod"
 import { useHousehold } from "@/hooks/useHousehold"
 import { useBudgetStore, useBudgetTotals } from "@/stores/budgetStore"
 import { createClient } from "@/lib/supabase/client"
 import { getCurrentMonth, getCurrentYear, getMonthName } from "@/lib/utils/dates"
 import { formatCurrency } from "@/lib/utils/currency"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingDown } from "lucide-react"
@@ -100,20 +99,13 @@ export default function AnalyticsPage() {
   const onBudgetCount = itemsWithBudget.filter((i) => Number(i.actual_amount) <= Number(i.planned_amount)).length
   const adherenceRate = itemsWithBudget.length > 0 ? (onBudgetCount / itemsWithBudget.length) * 100 : 100
 
-  // Category area chart data
-  const categoryAreaData = trendData.map((t) => {
-    const point: Record<string, any> = { name: `${getMonthName(t.month).slice(0, 3)} ${t.year}` }
-    // We only have current month item-level data, so show single point for now
-    return point
-  })
-
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-10 w-48 bg-[#1A1D27]" />
-        <div className="grid grid-cols-2 gap-6">
-          <Skeleton className="h-[350px] bg-[#1A1D27]" />
-          <Skeleton className="h-[350px] bg-[#1A1D27]" />
+        <div className="h-10 w-48 animate-shimmer rounded-lg" />
+        <div className="grid grid-cols-3 gap-6">
+          <div className="col-span-2 h-[350px] animate-shimmer rounded-xl" />
+          <div className="h-[350px] animate-shimmer rounded-xl" />
         </div>
       </div>
     )
@@ -125,7 +117,7 @@ export default function AnalyticsPage() {
         <MonthSelector month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y) }} />
       </div>
 
-      {/* Top row */}
+      {/* Planned vs Actual (2/3) + Savings Gauge (1/3) */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <PlannedVsActualBar categories={categories} items={items} />
@@ -133,13 +125,13 @@ export default function AnalyticsPage() {
         <SavingsGauge income={totals.income} expenses={totals.totalActual} />
       </div>
 
-      {/* Trend chart */}
+      {/* Trend chart — Full Width */}
       <TrendLineChart data={trendData} />
 
-      {/* Bottom row */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Bottom row: Adherence (1/3) | Top Overspend (1/3) | Top Categories (1/3) */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Budget Adherence */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D27]">
+        <Card className="glass-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold text-white">Budget Adherence</CardTitle>
           </CardHeader>
@@ -159,7 +151,7 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Top Overspend */}
-        <Card className="border-[#2A2D3A] bg-[#1A1D27]">
+        <Card className="glass-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold text-white">Top Overspend Items</CardTitle>
           </CardHeader>
@@ -176,17 +168,18 @@ export default function AnalyticsPage() {
                       <TrendingDown className="h-4 w-4 text-red-400" />
                       <span className="text-sm text-white">{item.name}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-red-500/30 text-red-400 text-xs">
-                        +{formatCurrency(item.overspend)}
-                      </Badge>
-                    </div>
+                    <Badge variant="outline" className="border-red-500/30 text-red-400 text-xs">
+                      +{formatCurrency(item.overspend)}
+                    </Badge>
                   </div>
                 ))}
               </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Top Categories */}
+        <TopCategoriesRank categories={categories} items={items} />
       </div>
     </div>
   )
