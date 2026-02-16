@@ -3,6 +3,7 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartTooltip } from "@/components/shared/ChartTooltip"
+import { InfoTip } from "@/components/shared/InfoTip"
 import { getMonthName } from "@/lib/utils/dates"
 
 interface TrendData {
@@ -29,7 +30,7 @@ export function TrendLineChart({ data }: TrendLineChartProps) {
     return (
       <Card className="glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold text-white">Spending Trend</CardTitle>
+          <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Spending Trend <InfoTip text="Your expenses and income over time. Shows how spending patterns change month to month." /></CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex h-[250px] items-center justify-center text-sm text-[#94A3B8]">
@@ -43,7 +44,7 @@ export function TrendLineChart({ data }: TrendLineChartProps) {
   return (
     <Card className="glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold text-white">Spending Trend</CardTitle>
+        <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Spending Trend <InfoTip text="Your expenses and income over time. Shows how spending patterns change month to month." /></CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={280}>

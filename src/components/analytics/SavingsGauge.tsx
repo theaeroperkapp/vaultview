@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils/currency"
+import { InfoTip } from "@/components/shared/InfoTip"
 
 interface SavingsGaugeProps {
   income: number
@@ -26,7 +27,7 @@ export function SavingsGauge({ income, expenses }: SavingsGaugeProps) {
   return (
     <Card className="glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold text-white">Savings Rate</CardTitle>
+        <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Savings Rate <InfoTip text="Percentage of your income that you saved. 20%+ is a healthy savings rate." /></CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center space-y-4">
         {/* SVG Radial Gauge */}

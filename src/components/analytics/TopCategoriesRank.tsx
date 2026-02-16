@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils/currency"
+import { InfoTip } from "@/components/shared/InfoTip"
 import type { BudgetCategory, BudgetItem } from "@/lib/supabase/types"
 
 interface TopCategoriesRankProps {
@@ -28,7 +29,7 @@ export function TopCategoriesRank({ categories, items }: TopCategoriesRankProps)
   return (
     <Card className="glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold text-white">Top Categories</CardTitle>
+        <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Top Categories <InfoTip text="Your highest spending categories ranked by actual amount spent." /></CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {data.length === 0 ? (

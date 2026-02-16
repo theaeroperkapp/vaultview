@@ -3,6 +3,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartTooltip } from "@/components/shared/ChartTooltip"
+import { InfoTip } from "@/components/shared/InfoTip"
 import type { BudgetCategory, BudgetItem } from "@/lib/supabase/types"
 
 interface PlannedVsActualBarProps {
@@ -23,7 +24,7 @@ export function PlannedVsActualBar({ categories, items }: PlannedVsActualBarProp
   return (
     <Card className="glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold text-white">Planned vs Actual</CardTitle>
+        <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Planned vs Actual <InfoTip text="Compares what you budgeted (planned) against what you actually spent per category." /></CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

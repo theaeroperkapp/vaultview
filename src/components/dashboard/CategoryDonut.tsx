@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils/currency"
 import { ChartTooltip } from "@/components/shared/ChartTooltip"
+import { InfoTip } from "@/components/shared/InfoTip"
 import type { BudgetCategory, BudgetItem } from "@/lib/supabase/types"
 
 interface CategoryDonutProps {
@@ -38,7 +39,7 @@ export function CategoryDonut({ categories, items }: CategoryDonutProps) {
   return (
     <Card className="glass-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold text-white">Spending by Category</CardTitle>
+        <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Spending by Category <InfoTip text="Breakdown of your actual spending across budget categories." /></CardTitle>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (

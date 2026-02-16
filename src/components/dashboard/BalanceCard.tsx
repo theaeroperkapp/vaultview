@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { formatCurrency } from "@/lib/utils/currency"
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { LineChart, Line, ResponsiveContainer } from "recharts"
+import { InfoTip } from "@/components/shared/InfoTip"
 import type { PeriodSummary } from "@/hooks/useAllPeriods"
 
 interface BalanceCardProps {
@@ -48,7 +49,10 @@ export function BalanceCard({ balance, income, expenses, trendData }: BalanceCar
     <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/10 via-[#1A1D27] to-[#1E2130] p-6 glow-border">
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <p className="text-sm font-medium text-[#94A3B8]">Monthly Balance</p>
+          <p className="text-sm font-medium text-[#94A3B8] flex items-center gap-1.5">
+              Monthly Balance
+              <InfoTip text="Income minus total expenses for this month. Positive means you spent less than you earned." />
+            </p>
           <div className="flex items-center gap-3">
             <p
               className={`animate-count-up text-5xl font-bold tabular-nums ${isPositive ? "text-emerald-400" : "text-red-400"}`}
@@ -85,15 +89,15 @@ export function BalanceCard({ balance, income, expenses, trendData }: BalanceCar
       {/* 3-column footer */}
       <div className="mt-5 grid grid-cols-3 gap-4 border-t border-[#2A2D3A]/50 pt-4">
         <div>
-          <p className="text-xs text-[#94A3B8]">Income</p>
+          <p className="text-xs text-[#94A3B8] flex items-center gap-1">Income <InfoTip text="Total income recorded for this month." /></p>
           <p className="text-lg font-semibold tabular-nums text-emerald-400">{formatCurrency(income)}</p>
         </div>
         <div>
-          <p className="text-xs text-[#94A3B8]">Expenses</p>
+          <p className="text-xs text-[#94A3B8] flex items-center gap-1">Expenses <InfoTip text="Total actual spending across all categories this month." /></p>
           <p className="text-lg font-semibold tabular-nums text-red-400">{formatCurrency(expenses)}</p>
         </div>
         <div>
-          <p className="text-xs text-[#94A3B8]">Savings Rate</p>
+          <p className="text-xs text-[#94A3B8] flex items-center gap-1">Savings Rate <InfoTip text="Percentage of income not spent. 20%+ is great." /></p>
           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-sm font-semibold ${
             savingsRate >= 20
               ? "bg-emerald-500/10 text-emerald-400"

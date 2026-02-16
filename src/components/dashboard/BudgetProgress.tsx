@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils/currency"
+import { InfoTip } from "@/components/shared/InfoTip"
 import type { BudgetCategory, BudgetItem } from "@/lib/supabase/types"
 
 interface BudgetProgressProps {
@@ -34,7 +35,7 @@ export function BudgetProgress({ categories, items }: BudgetProgressProps) {
   return (
     <Card className="glass-card">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-white">Budget Progress</CardTitle>
+        <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Budget Progress <InfoTip text="How much you've spent vs. planned in each category. Green = under budget, amber = close, red = over." /></CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {data.length === 0 ? (

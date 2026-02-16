@@ -3,6 +3,7 @@
 import { formatCurrency } from "@/lib/utils/currency"
 import { Receipt, Target, PiggyBank, Wallet } from "lucide-react"
 import { LineChart, Line, ResponsiveContainer } from "recharts"
+import { InfoTip } from "@/components/shared/InfoTip"
 import type { PeriodSummary } from "@/hooks/useAllPeriods"
 
 interface SummaryCardsProps {
@@ -32,6 +33,7 @@ export function SummaryCards({ totalPlanned, totalActual, totalDifference, incom
       bgColor: "bg-purple-500/10",
       sparkKey: "totalActual" as const,
       moM: prevMonth ? getMoM(totalActual, prevMonth.totalActual) : null,
+      tip: "Total actual spending across all budget categories this month.",
     },
     {
       label: "Budget",
@@ -41,6 +43,7 @@ export function SummaryCards({ totalPlanned, totalActual, totalDifference, incom
       bgColor: "bg-blue-500/10",
       sparkKey: "totalPlanned" as const,
       moM: prevMonth ? getMoM(totalPlanned, prevMonth.totalPlanned) : null,
+      tip: "Total planned budget across all categories for this month.",
     },
     {
       label: "Remaining",
@@ -50,6 +53,7 @@ export function SummaryCards({ totalPlanned, totalActual, totalDifference, incom
       bgColor: totalDifference >= 0 ? "bg-emerald-500/10" : "bg-red-500/10",
       sparkKey: "balance" as const,
       moM: prevMonth ? getMoM(totalDifference, prevMonth.totalPlanned - prevMonth.totalActual) : null,
+      tip: "Budget minus actual spending. Positive means you're under budget.",
     },
     {
       label: "Saved",
@@ -59,6 +63,7 @@ export function SummaryCards({ totalPlanned, totalActual, totalDifference, incom
       bgColor: saved >= 0 ? "bg-emerald-500/10" : "bg-red-500/10",
       sparkKey: "balance" as const,
       moM: prevMonth ? getMoM(saved, prevMonth.income - prevMonth.totalActual) : null,
+      tip: "Income minus actual expenses. This is how much you kept this month.",
     },
   ]
 
@@ -81,7 +86,7 @@ export function SummaryCards({ totalPlanned, totalActual, totalDifference, incom
                   <card.icon className={`h-5 w-5 ${card.color}`} />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-[#94A3B8]">{card.label}</p>
+                  <p className="text-xs font-medium text-[#94A3B8] flex items-center gap-1">{card.label} <InfoTip text={card.tip} /></p>
                   <p className={`text-lg font-bold tabular-nums ${card.color}`}>
                     {formatCurrency(card.value)}
                   </p>
