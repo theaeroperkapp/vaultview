@@ -34,7 +34,7 @@ export default function DashboardPage({ params }: { params: Promise<{ year: stri
       <div className="space-y-6">
         <div className="h-10 w-64 animate-shimmer rounded-lg" />
         <div className="h-40 w-full animate-shimmer rounded-xl" />
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="h-24 animate-shimmer rounded-xl" />
           ))}

@@ -11,6 +11,7 @@ import {
   Pencil,
   Trash2,
   CheckCheck,
+  AlertTriangle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useNotificationStore } from "@/stores/notificationStore"
@@ -29,6 +30,7 @@ const TYPE_CONFIG: Record<
   budget_add: { icon: Plus, color: "text-emerald-400", href: "/budget" },
   budget_edit: { icon: Pencil, color: "text-blue-400", href: "/budget" },
   budget_remove: { icon: Trash2, color: "text-red-400", href: "/budget" },
+  budget_overspend: { icon: AlertTriangle, color: "text-red-400", href: "/budget" },
 }
 
 function getRelativeTime(dateStr: string): string {

@@ -4,9 +4,10 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bell, MessageCircle } from "lucide-react"
+import { Bell, MessageCircle, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useChatStore } from "@/stores/chatStore"
+import { useSidebarStore } from "@/stores/sidebarStore"
 import { useNotificationStore } from "@/stores/notificationStore"
 import { useNotifications } from "@/hooks/useNotifications"
 import { useNotificationRealtime } from "@/hooks/useNotificationRealtime"
@@ -29,6 +30,7 @@ export function TopBar() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [showNotifications, setShowNotifications] = useState(false)
   const { unreadCount: chatUnread, toggleDrawer } = useChatStore()
+  const toggleMobile = useSidebarStore((s) => s.toggleMobile)
   const notifUnread = useNotificationStore((s) => s.unreadCount)
   const pathname = usePathname()
 
@@ -60,13 +62,23 @@ export function TopBar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#2A2D3A]/50 bg-[#0F1117]/60 px-6 backdrop-blur-xl">
-      <h1
-        className="text-lg font-semibold text-white/90"
-        style={{ fontFamily: 'var(--font-playfair)' }}
-      >
-        {pageTitle}
-      </h1>
+    <header className="sticky top-0 z-30 flex h-14 md:h-16 items-center justify-between border-b border-[#2A2D3A]/50 bg-[#0F1117]/60 px-3 md:px-6 backdrop-blur-xl">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden text-[#94A3B8] hover:text-white"
+          onClick={toggleMobile}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <h1
+          className="text-base md:text-lg font-semibold text-white/90"
+          style={{ fontFamily: 'var(--font-playfair)' }}
+        >
+          {pageTitle}
+        </h1>
+      </div>
       <div className="flex items-center gap-3">
         {/* Notification Bell */}
         <div className="relative">
@@ -110,7 +122,7 @@ export function TopBar() {
               {profile?.display_name?.charAt(0)?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm font-medium text-[#F1F5F9]">
+          <span className="hidden md:inline text-sm font-medium text-[#F1F5F9]">
             {profile?.display_name || "User"}
           </span>
         </div>

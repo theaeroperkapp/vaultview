@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils/currency"
 import { InfoTip } from "@/components/shared/InfoTip"
+import { AlertTriangle } from "lucide-react"
 import type { BudgetCategory, BudgetItem } from "@/lib/supabase/types"
 
 interface BudgetProgressProps {
@@ -37,6 +38,14 @@ export function BudgetProgress({ categories, items }: BudgetProgressProps) {
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold text-white flex items-center gap-2">Budget Progress <InfoTip text="How much you've spent vs. planned in each category. Green = under budget, amber = close, red = over." /></CardTitle>
       </CardHeader>
+      {data.filter(d => d.pct > 100).length > 0 && (
+        <div className="mx-4 mb-2 flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-2">
+          <AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
+          <span className="text-sm text-red-300">
+            {data.filter(d => d.pct > 100).length} {data.filter(d => d.pct > 100).length === 1 ? 'category is' : 'categories are'} over budget
+          </span>
+        </div>
+      )}
       <CardContent className="space-y-4">
         {data.length === 0 ? (
           <div className="flex h-[200px] items-center justify-center text-sm text-[#94A3B8]">
@@ -52,6 +61,12 @@ export function BudgetProgress({ categories, items }: BudgetProgressProps) {
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="text-[#94A3B8]">{item.name}</span>
+                  {item.pct > 100 && (
+                    <span className="inline-flex items-center gap-1 bg-red-500/15 text-red-400 text-xs rounded-full px-2 py-0.5">
+                      <AlertTriangle className="h-3 w-3" />
+                      Over by {formatCurrency(item.actual - item.planned)}
+                    </span>
+                  )}
                 </div>
                 <span className="tabular-nums text-white">
                   {formatCurrency(item.actual)}{" "}

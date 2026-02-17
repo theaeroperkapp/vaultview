@@ -369,7 +369,7 @@ export interface Database {
           id: string
           household_id: string
           user_id: string
-          type: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove'
+          type: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove' | 'budget_overspend'
           title: string
           body: string | null
           reference_id: string | null
@@ -380,7 +380,7 @@ export interface Database {
           id?: string
           household_id: string
           user_id: string
-          type: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove'
+          type: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove' | 'budget_overspend'
           title: string
           body?: string | null
           reference_id?: string | null
@@ -391,12 +391,70 @@ export interface Database {
           id?: string
           household_id?: string
           user_id?: string
-          type?: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove'
+          type?: 'request_new' | 'request_vote' | 'request_approved' | 'request_denied' | 'budget_add' | 'budget_edit' | 'budget_remove' | 'budget_overspend'
           title?: string
           body?: string | null
           reference_id?: string | null
           is_read?: boolean
           created_at?: string
+        }
+      }
+      budget_templates: {
+        Row: {
+          id: string
+          household_id: string
+          name: string
+          description: string | null
+          total_income: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          household_id: string
+          name: string
+          description?: string | null
+          total_income?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          household_id?: string
+          name?: string
+          description?: string | null
+          total_income?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      budget_template_items: {
+        Row: {
+          id: string
+          template_id: string
+          category_id: string
+          name: string
+          planned_amount: number
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          template_id: string
+          category_id: string
+          name: string
+          planned_amount?: number
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          template_id?: string
+          category_id?: string
+          name?: string
+          planned_amount?: number
+          sort_order?: number
         }
       }
     }
@@ -429,3 +487,5 @@ export type PurchaseRequest = Tables<'purchase_requests'>
 export type RequestVote = Tables<'request_votes'>
 export type Notification = Tables<'notifications'>
 export type BudgetAuditLog = Tables<'budget_audit_log'>
+export type BudgetTemplate = Tables<'budget_templates'>
+export type BudgetTemplateItem = Tables<'budget_template_items'>

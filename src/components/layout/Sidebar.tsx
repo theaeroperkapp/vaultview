@@ -47,7 +47,7 @@ export function Sidebar() {
   const router = useRouter()
   const unreadCount = useChatStore((s) => s.unreadCount)
   const { pendingCount } = useRequestCounts()
-  const { collapsed, toggle } = useSidebarStore()
+  const { collapsed, toggle, mobileOpen, setMobileOpen } = useSidebarStore()
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -55,13 +55,29 @@ export function Sidebar() {
     router.push("/login")
   }
 
+  const handleNavClick = () => {
+    setMobileOpen(false)
+  }
+
   return (
-    <aside
-      className={cn(
-        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-[#2A2D3A] bg-[#0D0F15] transition-all duration-300 ease-in-out",
-        collapsed ? "w-[72px]" : "w-64"
+    <>
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
       )}
-    >
+      <aside
+        className={cn(
+          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-[#2A2D3A] bg-[#0D0F15] transition-all duration-300 ease-in-out",
+          // Desktop
+          "hidden md:flex",
+          collapsed ? "md:w-[72px]" : "md:w-64",
+          // Mobile — slide-in drawer
+          mobileOpen && "!flex w-[280px]"
+        )}
+      >
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 px-4">
         <Vault className="h-7 w-7 shrink-0 text-emerald-500" />
@@ -83,6 +99,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={handleNavClick}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 collapsed && "justify-center px-0",
@@ -182,5 +199,6 @@ export function Sidebar() {
         </Button>
       </div>
     </aside>
+    </>
   )
 }

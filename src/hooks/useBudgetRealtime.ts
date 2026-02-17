@@ -7,7 +7,7 @@ import type { BudgetItem } from "@/lib/supabase/types"
 
 async function notifyHouseholdMembers(
   supabase: ReturnType<typeof createClient>,
-  type: "budget_add" | "budget_edit" | "budget_remove",
+  type: "budget_add" | "budget_edit" | "budget_remove" | "budget_overspend",
   title: string,
   body: string
 ) {
@@ -83,6 +83,7 @@ export function useBudgetRealtime(periodId: string | undefined) {
         },
         (payload) => {
           const item = payload.new as BudgetItem
+          const oldItem = payload.old as BudgetItem
           updateItem(payload.new.id, item)
           notifyHouseholdMembers(
             supabase,
@@ -90,6 +91,30 @@ export function useBudgetRealtime(periodId: string | undefined) {
             `Budget item updated: "${item.name}"`,
             `$${Number(item.actual_amount).toFixed(2)} actual / $${Number(item.planned_amount).toFixed(2)} planned`
           )
+
+          // Check if category just crossed over budget
+          const { items, categories } = useBudgetStore.getState()
+          const categoryId = item.category_id
+          const newCategoryTotal = items
+            .filter((i) => i.category_id === categoryId)
+            .reduce((sum, i) => sum + Number(i.actual_amount), 0)
+          const oldCategoryTotal =
+            newCategoryTotal - Number(item.actual_amount) + Number(oldItem.actual_amount)
+          const plannedTotal = items
+            .filter((i) => i.category_id === categoryId)
+            .reduce((sum, i) => sum + Number(i.planned_amount), 0)
+
+          if (oldCategoryTotal <= plannedTotal && newCategoryTotal > plannedTotal) {
+            const category = categories.find((c) => c.id === categoryId)
+            const categoryName = category?.name ?? "Unknown"
+            const overspend = (newCategoryTotal - plannedTotal).toFixed(2)
+            notifyHouseholdMembers(
+              supabase,
+              "budget_overspend",
+              `Over budget: ${categoryName}`,
+              `Spending exceeds plan by $${overspend}`
+            )
+          }
         }
       )
       .on(

@@ -18,6 +18,9 @@ interface BudgetState {
   updateItem: (id: string, updates: Partial<BudgetItem>) => void
   addItem: (item: BudgetItem) => void
   removeItem: (id: string) => void
+
+  reorderCategories: (reordered: BudgetCategory[]) => void
+  reorderItemsInCategory: (categoryId: string, reordered: BudgetItem[]) => void
 }
 
 export const useBudgetStore = create<BudgetState>((set, get) => ({
@@ -48,6 +51,15 @@ export const useBudgetStore = create<BudgetState>((set, get) => ({
   removeItem: (id) =>
     set((state) => ({
       items: state.items.filter((item) => item.id !== id),
+    })),
+
+  reorderCategories: (reordered) => set({ categories: reordered }),
+  reorderItemsInCategory: (categoryId, reordered) =>
+    set((state) => ({
+      items: [
+        ...state.items.filter((i) => i.category_id !== categoryId),
+        ...reordered,
+      ],
     })),
 }))
 
