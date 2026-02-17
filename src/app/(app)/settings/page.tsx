@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { createClient } from "@/lib/supabase/client"
 import { useHousehold } from "@/hooks/useHousehold"
 import { toast } from "sonner"
-import { Copy, RefreshCw } from "lucide-react"
+import { Copy, RefreshCw, Camera, Loader2 } from "lucide-react"
 import type { Profile } from "@/lib/supabase/types"
 
 export default function SettingsPage() {
@@ -18,6 +18,8 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState("")
   const [householdName, setHouseholdName] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { household } = useHousehold()
 
   useEffect(() => {
@@ -51,6 +53,63 @@ export default function SettingsPage() {
     if (error) toast.error(error.message)
     else toast.success("Profile updated!")
     setIsSaving(false)
+  }
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !profile) return
+
+    // Validate file
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file")
+      return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be under 2MB")
+      return
+    }
+
+    setIsUploading(true)
+    const supabase = createClient()
+
+    const ext = file.name.split(".").pop()
+    const filePath = `${profile.id}/avatar.${ext}`
+
+    // Upload to storage
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, { upsert: true })
+
+    if (uploadError) {
+      toast.error("Upload failed: " + uploadError.message)
+      setIsUploading(false)
+      return
+    }
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(filePath)
+
+    // Add cache-bust to force refresh
+    const avatarUrl = `${publicUrl}?t=${Date.now()}`
+
+    // Update profile
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: avatarUrl, updated_at: new Date().toISOString() })
+      .eq("id", profile.id)
+
+    if (updateError) {
+      toast.error("Failed to update profile: " + updateError.message)
+    } else {
+      setProfile({ ...profile, avatar_url: avatarUrl })
+      toast.success("Profile picture updated!")
+    }
+    setIsUploading(false)
+
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   const handleSaveHousehold = async () => {
@@ -98,15 +157,41 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={profile?.avatar_url || undefined} />
-              <AvatarFallback className="bg-emerald-500/20 text-emerald-500 text-xl">
-                {profile?.display_name?.charAt(0)?.toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative group">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={profile?.avatar_url || undefined} />
+                <AvatarFallback className="bg-emerald-500/20 text-emerald-500 text-xl">
+                  {profile?.display_name?.charAt(0)?.toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition-opacity group-hover:opacity-100"
+              >
+                {isUploading ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                ) : (
+                  <Camera className="h-5 w-5 text-white" />
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+            </div>
             <div>
               <p className="font-semibold text-white">{profile?.display_name}</p>
               <p className="text-sm text-[#94A3B8]">{profile?.email}</p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-1 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+              >
+                Change photo
+              </button>
             </div>
           </div>
           <Separator className="bg-[#2A2D3A]" />

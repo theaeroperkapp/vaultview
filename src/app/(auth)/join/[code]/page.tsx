@@ -60,6 +60,7 @@ export default function JoinPage() {
     }
 
     setIsJoining(false)
+    sessionStorage.setItem("just-logged-in", "1")
     router.push("/dashboard")
   }
 

@@ -8,10 +8,10 @@ export function SplashOverlay() {
   const [fadeOut, setFadeOut] = useState(false)
 
   useEffect(() => {
-    const shown = sessionStorage.getItem("splash-shown")
-    if (!shown) {
+    const justLoggedIn = sessionStorage.getItem("just-logged-in")
+    if (justLoggedIn) {
+      sessionStorage.removeItem("just-logged-in")
       setVisible(true)
-      sessionStorage.setItem("splash-shown", "1")
 
       const timer = setTimeout(() => {
         setFadeOut(true)

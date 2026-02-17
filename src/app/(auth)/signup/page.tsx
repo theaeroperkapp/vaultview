@@ -85,6 +85,7 @@ export default function SignupPage() {
     )
 
     toast.success("Account created! Welcome to VaultView.")
+    sessionStorage.setItem("just-logged-in", "1")
     router.push("/dashboard")
     router.refresh()
   }

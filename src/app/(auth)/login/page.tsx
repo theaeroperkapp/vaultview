@@ -30,6 +30,7 @@ export default function LoginPage() {
       return
     }
 
+    sessionStorage.setItem("just-logged-in", "1")
     router.push("/dashboard")
     router.refresh()
   }
