@@ -7,7 +7,6 @@ import {
   Table2,
   BarChart3,
   MessageCircle,
-  Settings,
   LogOut,
   Vault,
   TrendingUp,
@@ -39,7 +38,6 @@ const navItems = [
   { href: "/year-overview", label: "Year Overview", icon: CalendarRange },
   { href: "/requests", label: "Requests", icon: ShoppingCart },
   { href: "/chat", label: "Chat", icon: MessageCircle },
-  { href: "/settings", label: "Settings", icon: Settings },
 ]
 
 export function Sidebar() {

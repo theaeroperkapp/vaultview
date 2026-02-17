@@ -46,17 +46,19 @@ export default function DashboardPage({ params }: { params: Promise<{ year: stri
   return (
     <div className="space-y-6 animate-slide-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <MonthSelector month={month} year={year} />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Link href="/budget/import">
             <Button variant="outline" size="sm" className="border-[#2A2D3A] bg-transparent text-[#94A3B8] hover:bg-[#1A1D27] hover:text-white">
-              <Upload className="mr-2 h-4 w-4" /> Import CSV
+              <Upload className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">Import CSV</span>
             </Button>
           </Link>
           <Link href="/budget">
             <Button size="sm" className="bg-emerald-500 text-white hover:bg-emerald-600">
-              <Plus className="mr-2 h-4 w-4" /> Edit Budget
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">Edit Budget</span>
             </Button>
           </Link>
         </div>

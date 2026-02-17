@@ -94,7 +94,7 @@ export function ChatPanel({ isDrawer }: ChatPanelProps) {
   }
 
   return (
-    <div className={`flex flex-col ${isDrawer ? "h-[calc(100vh-60px)]" : "h-[calc(100vh-10rem)]"}`}>
+    <div className={`flex flex-col ${isDrawer ? "h-[calc(100vh-60px)]" : "h-[calc(100vh-8rem)] md:h-[calc(100vh-10rem)]"}`}>
       <ScrollArea className="flex-1 px-4" ref={scrollRef}>
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center py-20 text-center">

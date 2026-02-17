@@ -58,10 +58,11 @@ export function MonthSelector({ month, year, onChange }: MonthSelectorProps) {
 
       <button
         onClick={() => { setGridYear(year); setOpen(!open) }}
-        className="flex min-w-[180px] items-center justify-center gap-2 text-xl font-semibold text-white hover:text-emerald-400 transition-colors"
+        className="flex items-center justify-center gap-2 text-base md:text-xl font-semibold text-white hover:text-emerald-400 transition-colors whitespace-nowrap"
         style={{ fontFamily: 'var(--font-playfair)' }}
       >
-        {getMonthName(month)} {year}
+        <span className="md:hidden">{getMonthName(month).slice(0, 3)} {year}</span>
+        <span className="hidden md:inline">{getMonthName(month)} {year}</span>
       </button>
 
       <Button
