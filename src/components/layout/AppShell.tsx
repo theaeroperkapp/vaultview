@@ -3,6 +3,7 @@
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TopBar } from "@/components/layout/TopBar"
 import { ChatDrawer } from "@/components/layout/ChatDrawer"
+import { SplashOverlay } from "@/components/layout/SplashOverlay"
 import { useSidebarStore } from "@/stores/sidebarStore"
 import { cn } from "@/lib/utils"
 
@@ -25,6 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <ChatDrawer />
+      <SplashOverlay />
     </div>
   )
 }
