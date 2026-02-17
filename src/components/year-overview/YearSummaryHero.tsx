@@ -9,12 +9,14 @@ interface YearSummaryHeroProps {
 }
 
 export function YearSummaryHero({ data, year }: YearSummaryHeroProps) {
-  const annualIncome = data.reduce((s, d) => s + d.income, 0)
-  const annualExpenses = data.reduce((s, d) => s + d.totalActual, 0)
+  // Only count months that actually have activity
+  const activeMonths = data.filter((d) => d.income > 0 || d.totalActual > 0)
+  const annualIncome = activeMonths.reduce((s, d) => s + d.income, 0)
+  const annualExpenses = activeMonths.reduce((s, d) => s + d.totalActual, 0)
   const annualSavings = annualIncome - annualExpenses
 
   // Project full year if we don't have 12 months
-  const monthsWithData = data.length
+  const monthsWithData = activeMonths.length
   const projectedIncome = monthsWithData > 0 ? (annualIncome / monthsWithData) * 12 : 0
   const projectedExpenses = monthsWithData > 0 ? (annualExpenses / monthsWithData) * 12 : 0
   const projectedSavings = projectedIncome - projectedExpenses

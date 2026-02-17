@@ -27,12 +27,23 @@ export function AnnualCategoryBreakdown({ data, year }: AnnualCategoryBreakdownP
 
     const supabase = createClient()
     const fetchCatSpend = async () => {
-      // Get all periods for this year
-      const { data: periods } = await supabase
+      // Get periods for this year up to current month
+      const now = new Date()
+      const currentYear = now.getFullYear()
+      const currentMonth = now.getMonth() + 1
+
+      let query = supabase
         .from("budget_periods")
-        .select("id")
+        .select("id, month")
         .eq("household_id", household.id)
         .eq("year", year)
+
+      // If viewing the current year, exclude future months
+      if (year >= currentYear) {
+        query = query.lte("month", currentMonth)
+      }
+
+      const { data: periods } = await query
 
       if (!periods || periods.length === 0) return
 

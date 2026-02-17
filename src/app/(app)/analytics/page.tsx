@@ -48,13 +48,22 @@ export default function AnalyticsPage() {
       const allPeriods = (data || []) as Array<{ id: string; month: number; year: number; total_income: number }>
       if (allPeriods.length === 0) return
 
-      allPeriods.sort((a, b) => {
+      // Filter out future months
+      const now = new Date()
+      const currentYear = now.getFullYear()
+      const currentMonth = now.getMonth() + 1
+
+      const pastPeriods = allPeriods.filter(
+        (p) => p.year < currentYear || (p.year === currentYear && p.month <= currentMonth)
+      )
+
+      pastPeriods.sort((a, b) => {
         if (a.year !== b.year) return a.year - b.year
         return a.month - b.month
       })
 
       const trends: TrendData[] = []
-      for (const period of allPeriods) {
+      for (const period of pastPeriods) {
         const { data: itemData } = await supabase
           .from("budget_items")
           .select("*")

@@ -39,13 +39,22 @@ export function useAllPeriods() {
         total_income: number
       }>
 
-      if (allPeriods.length === 0) {
+      // Filter out future months
+      const now = new Date()
+      const currentYear = now.getFullYear()
+      const currentMonth = now.getMonth() + 1 // 1-indexed
+
+      const pastPeriods = allPeriods.filter(
+        (p) => p.year < currentYear || (p.year === currentYear && p.month <= currentMonth)
+      )
+
+      if (pastPeriods.length === 0) {
         setData([])
         setIsLoading(false)
         return
       }
 
-      allPeriods.sort((a, b) => {
+      pastPeriods.sort((a, b) => {
         if (a.year !== b.year) return a.year - b.year
         return a.month - b.month
       })
@@ -53,7 +62,7 @@ export function useAllPeriods() {
       const summaries: PeriodSummary[] = []
       let cumulative = 0
 
-      for (const period of allPeriods) {
+      for (const period of pastPeriods) {
         const { data: itemData } = await supabase
           .from("budget_items")
           .select("planned_amount, actual_amount")
