@@ -9,15 +9,17 @@ interface SavingsProgressCardProps {
 }
 
 export function SavingsProgressCard({ data }: SavingsProgressCardProps) {
-  const totalIncome = data.reduce((s, d) => s + d.income, 0)
-  const totalExpenses = data.reduce((s, d) => s + d.totalActual, 0)
+  // Only count months that actually have activity
+  const activeMonths = data.filter((d) => d.income > 0 || d.totalActual > 0)
+  const totalIncome = activeMonths.reduce((s, d) => s + d.income, 0)
+  const totalExpenses = activeMonths.reduce((s, d) => s + d.totalActual, 0)
   const totalSaved = totalIncome - totalExpenses
 
-  // Project annual savings (extrapolate from current months)
-  const monthsWithData = data.length
+  // Project annual savings (extrapolate from active months only)
+  const monthsWithData = activeMonths.length
   const projectedAnnualSavings = monthsWithData > 0 ? (totalSaved / monthsWithData) * 12 : 0
 
-  // Progress toward projected goal
+  // Progress: how far through the year we are vs how much we've saved
   const pct = projectedAnnualSavings > 0 ? (totalSaved / projectedAnnualSavings) * 100 : 0
 
   // SVG gauge
