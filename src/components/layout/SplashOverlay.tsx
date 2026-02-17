@@ -4,22 +4,16 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 
 export function SplashOverlay() {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(true)
   const [fadeOut, setFadeOut] = useState(false)
 
   useEffect(() => {
-    const justLoggedIn = sessionStorage.getItem("just-logged-in")
-    if (justLoggedIn) {
-      sessionStorage.removeItem("just-logged-in")
-      setVisible(true)
+    const timer = setTimeout(() => {
+      setFadeOut(true)
+      setTimeout(() => setVisible(false), 500)
+    }, 3000)
 
-      const timer = setTimeout(() => {
-        setFadeOut(true)
-        setTimeout(() => setVisible(false), 500)
-      }, 3500)
-
-      return () => clearTimeout(timer)
-    }
+    return () => clearTimeout(timer)
   }, [])
 
   if (!visible) return null
