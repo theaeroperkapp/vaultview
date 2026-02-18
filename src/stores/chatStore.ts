@@ -10,6 +10,8 @@ interface ChatState {
 
   setMessages: (messages: Message[]) => void
   addMessage: (message: Message) => void
+  updateMessage: (id: string, updates: Partial<Message>) => void
+  deleteMessage: (id: string) => void
   setProfiles: (profiles: Record<string, Profile>) => void
   setLoading: (loading: boolean) => void
   setUnreadCount: (count: number) => void
@@ -28,6 +30,16 @@ export const useChatStore = create<ChatState>((set) => ({
   addMessage: (message) =>
     set((state) => ({
       messages: [...state.messages, message],
+    })),
+  updateMessage: (id, updates) =>
+    set((state) => ({
+      messages: state.messages.map((m) =>
+        m.id === id ? { ...m, ...updates } : m
+      ),
+    })),
+  deleteMessage: (id) =>
+    set((state) => ({
+      messages: state.messages.filter((m) => m.id !== id),
     })),
   setProfiles: (profiles) => set({ profiles }),
   setLoading: (isLoading) => set({ isLoading }),

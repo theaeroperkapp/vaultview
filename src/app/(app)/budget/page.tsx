@@ -253,9 +253,49 @@ export default function BudgetPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <div className="h-10 w-64 animate-shimmer rounded-lg" />
-        <div className="h-[600px] w-full animate-shimmer rounded-xl" />
+      <div className="space-y-6">
+        {/* Header: Month selector + income */}
+        <div className="flex items-center justify-between">
+          <div className="h-10 w-48 animate-shimmer rounded-lg" />
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-24 animate-shimmer rounded-lg hidden sm:block" />
+            <div className="h-10 w-24 animate-shimmer rounded-lg hidden sm:block" />
+            <div className="h-10 w-40 animate-shimmer rounded-lg" />
+          </div>
+        </div>
+        {/* Desktop table skeleton */}
+        <div className="glass-card overflow-hidden hidden md:block">
+          <div className="p-4 bg-gradient-to-r from-emerald-500/5 to-transparent">
+            <div className="h-5 w-32 animate-shimmer rounded" />
+          </div>
+          <div className="px-4 pb-4">
+            <div className="flex items-center gap-4 border-b border-[#2A2D3A]/50 py-3">
+              <div className="h-3 w-24 animate-shimmer rounded" />
+              <div className="h-3 w-20 animate-shimmer rounded ml-auto" />
+              <div className="h-3 w-20 animate-shimmer rounded" />
+              <div className="h-3 w-20 animate-shimmer rounded" />
+              <div className="h-3 w-16 animate-shimmer rounded" />
+            </div>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="py-3 space-y-2">
+                <div className="h-8 w-full animate-shimmer rounded" />
+                {[...Array(4)].map((_, j) => (
+                  <div key={j} className="h-10 w-[calc(100%-1rem)] animate-shimmer rounded ml-4" />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Mobile card skeletons */}
+        <div className="md:hidden space-y-3">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="glass-card p-4 space-y-3">
+              <div className="h-5 w-32 animate-shimmer rounded" />
+              <div className="h-10 w-full animate-shimmer rounded" />
+              <div className="h-10 w-full animate-shimmer rounded" />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }

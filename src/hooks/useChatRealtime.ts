@@ -7,6 +7,8 @@ import type { Message } from "@/lib/supabase/types"
 
 export function useChatRealtime(householdId: string | undefined) {
   const addMessage = useChatStore((s) => s.addMessage)
+  const updateMessage = useChatStore((s) => s.updateMessage)
+  const deleteMessage = useChatStore((s) => s.deleteMessage)
   const setUnreadCount = useChatStore((s) => s.setUnreadCount)
 
   useEffect(() => {
@@ -37,10 +39,36 @@ export function useChatRealtime(householdId: string | undefined) {
           addMessage(newMessage)
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter: `household_id=eq.${householdId}`,
+        },
+        (payload) => {
+          const updated = payload.new as Message
+          updateMessage(updated.id, updated)
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+          filter: `household_id=eq.${householdId}`,
+        },
+        (payload) => {
+          const old = payload.old as { id: string }
+          deleteMessage(old.id)
+        }
+      )
       .subscribe()
 
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [householdId, addMessage, setUnreadCount])
+  }, [householdId, addMessage, updateMessage, deleteMessage, setUnreadCount])
 }

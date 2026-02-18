@@ -10,17 +10,57 @@ import { Separator } from "@/components/ui/separator"
 import { createClient } from "@/lib/supabase/client"
 import { useHousehold } from "@/hooks/useHousehold"
 import { toast } from "sonner"
-import { Copy, RefreshCw, Camera, Loader2 } from "lucide-react"
+import { Copy, RefreshCw, Camera, Loader2, Bell } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useNotificationStore } from "@/stores/notificationStore"
 import type { Profile } from "@/lib/supabase/types"
+
+const NOTIF_TYPE_LABELS: Record<string, string> = {
+  request_new: "New purchase requests",
+  request_vote: "Request votes",
+  request_approved: "Requests approved",
+  request_denied: "Requests denied",
+  budget_add: "Budget items added",
+  budget_edit: "Budget items edited",
+  budget_remove: "Budget items removed",
+  budget_overspend: "Budget overspend alerts",
+}
+
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={cn(
+        "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors",
+        checked ? "bg-emerald-500" : "bg-[#2A2D3A]"
+      )}
+    >
+      <span
+        className={cn(
+          "inline-block h-4 w-4 rounded-full bg-white transition-transform",
+          checked ? "translate-x-6" : "translate-x-1"
+        )}
+      />
+    </button>
+  )
+}
 
 export default function SettingsPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [displayName, setDisplayName] = useState("")
   const [householdName, setHouseholdName] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { household } = useHousehold()
+  const { preferences, setPreference, loadPreferences } = useNotificationStore()
+
+  useEffect(() => {
+    loadPreferences()
+  }, [loadPreferences])
 
   useEffect(() => {
     const supabase = createClient()
@@ -33,6 +73,7 @@ export default function SettingsPage() {
           setDisplayName(data.display_name)
         }
       }
+      setIsLoading(false)
     }
     fetchProfile()
   }, [])
@@ -147,6 +188,35 @@ export default function SettingsPage() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="glass-card p-6 space-y-4">
+          <div className="h-5 w-20 animate-shimmer rounded" />
+          <div className="h-3 w-40 animate-shimmer rounded" />
+          <div className="flex items-center gap-4">
+            <div className="h-16 w-16 rounded-full animate-shimmer shrink-0" />
+            <div className="space-y-2">
+              <div className="h-4 w-32 animate-shimmer rounded" />
+              <div className="h-3 w-48 animate-shimmer rounded" />
+            </div>
+          </div>
+          <div className="h-px bg-[#2A2D3A]" />
+          <div className="h-4 w-28 animate-shimmer rounded" />
+          <div className="h-10 w-full animate-shimmer rounded-md" />
+          <div className="h-10 w-28 animate-shimmer rounded-md" />
+        </div>
+        <div className="glass-card p-6 space-y-4">
+          <div className="h-5 w-24 animate-shimmer rounded" />
+          <div className="h-3 w-44 animate-shimmer rounded" />
+          <div className="h-10 w-full animate-shimmer rounded-md" />
+          <div className="h-px bg-[#2A2D3A]" />
+          <div className="h-10 w-full animate-shimmer rounded-md" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-6 animate-slide-in">
       {/* Profile */}
@@ -246,6 +316,33 @@ export default function SettingsPage() {
               </Button>
             </div>
             <p className="text-xs text-[#94A3B8]">Share this link to invite members to your household</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notification Preferences */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-white">
+            <Bell className="h-5 w-5 text-emerald-400" />
+            Notifications
+          </CardTitle>
+          <CardDescription className="text-[#94A3B8]">Choose which notifications you receive</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-1">
+            {Object.entries(NOTIF_TYPE_LABELS).map(([type, label]) => (
+              <div
+                key={type}
+                className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-[#1A1D27]"
+              >
+                <span className="text-sm text-[#F1F5F9]">{label}</span>
+                <Toggle
+                  checked={preferences[type] !== false}
+                  onChange={(v) => setPreference(type, v)}
+                />
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

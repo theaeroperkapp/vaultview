@@ -1,22 +1,37 @@
 import { create } from 'zustand'
 import type { Notification } from '@/lib/supabase/types'
 
+const DEFAULT_PREFERENCES: Record<string, boolean> = {
+  request_new: true,
+  request_vote: true,
+  request_approved: true,
+  request_denied: true,
+  budget_add: true,
+  budget_edit: true,
+  budget_remove: true,
+  budget_overspend: true,
+}
+
 interface NotificationState {
   notifications: Notification[]
   unreadCount: number
   isLoading: boolean
+  preferences: Record<string, boolean>
 
   setNotifications: (notifications: Notification[]) => void
   addNotification: (notification: Notification) => void
   markRead: (id: string) => void
   markAllRead: () => void
   setLoading: (loading: boolean) => void
+  setPreference: (type: string, enabled: boolean) => void
+  loadPreferences: () => void
 }
 
 export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [],
   unreadCount: 0,
   isLoading: true,
+  preferences: { ...DEFAULT_PREFERENCES },
 
   setNotifications: (notifications) =>
     set({
@@ -52,4 +67,23 @@ export const useNotificationStore = create<NotificationState>((set) => ({
     })),
 
   setLoading: (loading) => set({ isLoading: loading }),
+
+  setPreference: (type, enabled) =>
+    set((state) => {
+      const next = { ...state.preferences, [type]: enabled }
+      if (typeof window !== "undefined") {
+        localStorage.setItem("vaultview-notification-prefs", JSON.stringify(next))
+      }
+      return { preferences: next }
+    }),
+
+  loadPreferences: () => {
+    if (typeof window === "undefined") return
+    const saved = localStorage.getItem("vaultview-notification-prefs")
+    if (saved) {
+      try {
+        set({ preferences: { ...DEFAULT_PREFERENCES, ...JSON.parse(saved) } })
+      } catch { /* ignore corrupt data */ }
+    }
+  },
 }))

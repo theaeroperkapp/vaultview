@@ -7,6 +7,11 @@ import type { Notification } from "@/lib/supabase/types"
 
 export function useNotificationRealtime(userId: string | undefined) {
   const addNotification = useNotificationStore((s) => s.addNotification)
+  const loadPreferences = useNotificationStore((s) => s.loadPreferences)
+
+  useEffect(() => {
+    loadPreferences()
+  }, [loadPreferences])
 
   useEffect(() => {
     if (!userId) return
@@ -24,7 +29,11 @@ export function useNotificationRealtime(userId: string | undefined) {
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          addNotification(payload.new as Notification)
+          const notif = payload.new as Notification
+          const prefs = useNotificationStore.getState().preferences
+          if (prefs[notif.type] !== false) {
+            addNotification(notif)
+          }
         }
       )
       .subscribe()

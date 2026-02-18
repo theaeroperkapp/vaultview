@@ -5,6 +5,8 @@ import { PlannedVsActualBar } from "@/components/analytics/PlannedVsActualBar"
 import { SavingsGauge } from "@/components/analytics/SavingsGauge"
 import { TrendLineChart } from "@/components/analytics/TrendLineChart"
 import { TopCategoriesRank } from "@/components/analytics/TopCategoriesRank"
+import { SpendingForecast } from "@/components/analytics/SpendingForecast"
+import { MonthOverMonthComparison } from "@/components/analytics/MonthOverMonthComparison"
 import { useBudgetPeriod } from "@/hooks/useBudgetPeriod"
 import { useHousehold } from "@/hooks/useHousehold"
 import { useBudgetStore, useBudgetTotals } from "@/stores/budgetStore"
@@ -136,6 +138,16 @@ export default function AnalyticsPage() {
 
       {/* Trend chart — Full Width */}
       <TrendLineChart data={trendData} />
+
+      {/* Forecast + Month Comparison */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <SpendingForecast trendData={trendData} />
+        <MonthOverMonthComparison
+          trendData={trendData}
+          currentMonth={month}
+          currentYear={year}
+        />
+      </div>
 
       {/* Bottom row: Adherence (1/3) | Top Overspend (1/3) | Top Categories (1/3) */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
